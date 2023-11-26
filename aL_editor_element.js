@@ -1,10 +1,17 @@
 "use strict";
+
+var last_target = null;
+var last_event_deltaT = 0;
 // aL_editor_element.js
 class ActionLayerEditor extends HTMLElement {
   constructor() {
     super();
   }
 
+  // aL_window_control.js
+
+doubleTapFocus;
+  
   connectedCallback() {
     this.style.display = "none";
     this.style.position = "absolute";
@@ -34,25 +41,25 @@ class ActionLayerEditor extends HTMLElement {
       border: 1px solid black;
     }
   </style>
-  <div class="aL-window"></div>
-  <div class="aL-paint">
-    <div class="aL-options">
-      <input class="undo" type="button" value="undo" />
-      <input class="redo" type="button" value="redo" />
-      <label>Import image:</label>
-      <input class="file-import" type="file" accept="image/*,.json" />
-      <input class="file-export" type="button" value="save" />
-      <input class="stroke-color" type="color" value="#000000" />
-      <label>Brush weight:</label>
-      <input class="stroke-weight" type="number" value="1" min="0.1" max="10" step="0.1" /><br>
-      <label>Width:</label>
-      <input class="texture-width" type="text" value="128px" size="6" /><br>
-      <label>Height:</label>
-      <input class="texture-height" type="text" value="128px" size="6" /><br>
-      <label>Enable Grid:</label>
-      <input class="display-grid" type="checkbox" checked />
+  <div class="aL aL-window"></div>
+  <div class="aL aL-paint">
+    <div class="aL aL-options">
+      <input class="aL undo" type="button" value="undo" />
+      <input class="aL redo" type="button" value="redo" />
+      <label class="aL">Import image:</label>
+      <input class="aL file-import" type="file" accept="image/*,.json" />
+      <input class="aL file-export" type="button" value="save" />
+      <input class="aL stroke-color" type="color" value="#000000" />
+      <label class="aL">Brush weight:</label>
+      <input class="aL stroke-weight" type="number" value="1" min="0.1" max="10" step="0.1" /><br>
+      <label class="aL">Width:</label>
+      <input class="aL texture-width" type="text" value="128px" size="6" /><br>
+      <label class="aL">Height:</label>
+      <input class="aL texture-height" type="text" value="128px" size="6" /><br>
+      <label class="aL">Enable Grid:</label>
+      <input class="aL display-grid" type="checkbox" checked />
     </div>
-    <canvas class="aL-canvas"></canvas>
+    <canvas class="aL aL-canvas"></canvas>
   </div>`;
   const aL_window_element = shadowDOM.querySelector(".aL-window");
   aL_window_element.addEventListener("pointerup", (event) => this.style.display = "none");
@@ -64,6 +71,21 @@ class ActionLayerEditor extends HTMLElement {
   aL_width_input_element.onchange = (event) => aL_canvas_element.width = parseInt(aL_width_input_element.value);
   aL_height_input_element.onchange = (event) => aL_canvas_element.height = parseInt(aL_height_input_element.value);
   }
+
+  // aL_window_control.js
+doubleTapFocus = function(event) {
+  const elapsed_deltaT = Date.now() - last_event_deltaT;
+  if((event.target == last_target) && (elapsed_deltaT < 500)) {
+    console.log(event.target);
+    const aL_editor_element = document.querySelector("al-editor");
+    aL_editor_element.openEditorPaint(event.target);
+  } else{
+    if (event.target.nodeName != "AL-EDITOR") {
+      last_target = event.target;
+      last_event_deltaT = Date.now();
+    }
+  }
+}
 
   
 // CANVAS will NOT RESIZE width/height
@@ -132,6 +154,7 @@ class ActionLayerEditor extends HTMLElement {
 
       const canvas_data = aL_canvas_element.toDataURL("image/png");
       console.log(canvas_data);
+      shadowDOM.querySelector(".file-export").onpointerdown = (e) => {window.location =canvas_data};
       target_element.style.backgroundImage = `url(${canvas_data})`;
     }
     aL_canvas_element.onpointerdown = beginPainting;
@@ -147,24 +170,25 @@ class ActionLayerEditor extends HTMLElement {
 
 customElements.define("al-editor", ActionLayerEditor);
 
-// aL_window_control.js
-var last_target;
-var last_event_deltaT;
-function doubleTapFocus(event) {
-  const elapsed_deltaT = Date.now() - last_event_deltaT;
-  if((event.target == last_target) && (elapsed_deltaT < 500)) {
-    const aL_editor_element = document.querySelector("al-editor");
-    aL_editor_element.openEditorPaint(event.target);
-  } else{
-    last_target = event.target;
-    last_event_deltaT = Date.now();
-  }
-}
+// // aL_window_control.js
+// var last_target;
+// var last_event_deltaT;
+// function doubleTapFocus(event) {
+//   const elapsed_deltaT = Date.now() - last_event_deltaT;
+//   if((event.target == last_target) && (elapsed_deltaT < 500)) {
+//     const aL_editor_element = document.querySelector("al-editor");
+//     aL_editor_element.openEditorPaint(event.target);
+//   } else{
+//     last_target = event.target;
+//     last_event_deltaT = Date.now();
+//   }
+// }
 
 window.addEventListener("load", (e) => {
   if(!document.querySelector("al-editor")) {
     console.log("added")
     document.body.innerHTML += "<al-editor></al-editor>";
   }
-  document.addEventListener("pointerup", doubleTapFocus);
+  const canvas = document.querySelector("al-editor");
+  document.addEventListener("pointerup", canvas.doubleTapFocus);
 });
