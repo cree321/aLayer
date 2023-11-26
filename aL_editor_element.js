@@ -12,7 +12,7 @@ class ActionLayerEditor extends HTMLElement {
 
 doubleTapFocus;
   
-  connectedCallback() {
+  connectedCallback() { 
     this.style.display = "none";
     this.style.position = "absolute";
     this.style.touchAction = "none";
@@ -26,7 +26,7 @@ doubleTapFocus;
       height:40%;
     }
     .aL-paint {
-      height: 60%;
+      height: 60%; 
       padding: 10px;
     }
     .aL-options {
@@ -48,7 +48,7 @@ doubleTapFocus;
       <input class="aL redo" type="button" value="redo" />
       <label class="aL">Import image:</label>
       <input class="aL file-import" type="file" accept="image/*,.json" />
-      <input class="aL file-export" type="button" value="save" />
+      <a class="aL file-export" download>save</a>
       <input class="aL stroke-color" type="color" value="#000000" />
       <label class="aL">Brush weight:</label>
       <input class="aL stroke-weight" type="number" value="1" min="0.1" max="10" step="0.1" /><br>
@@ -154,7 +154,7 @@ doubleTapFocus = function(event) {
 
       const canvas_data = aL_canvas_element.toDataURL("image/png");
       console.log(canvas_data);
-      shadowDOM.querySelector(".file-export").onpointerdown = (e) => {window.location =canvas_data};
+      shadowDOM.querySelector(".file-export").href = canvas_data;
       target_element.style.backgroundImage = `url(${canvas_data})`;
     }
     aL_canvas_element.onpointerdown = beginPainting;
