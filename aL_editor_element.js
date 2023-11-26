@@ -22,6 +22,9 @@ doubleTapFocus;
     this.style.left = "0px";
     const shadowDOM = this.attachShadow({ mode: "open" });
     shadowDOM.innerHTML = `<style>
+    .aL {
+      user-select: none;
+    }
     .aL-window {
       height:40%;
     }
