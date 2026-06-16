@@ -112,6 +112,7 @@ doubleTapFocus = function(event) {
 
 // aL_editor_control.js START
   function setupPaint() {
+    this.addEventListener("pointermove", (e) => { e.stopPropagation(); });
     //const shadowDOM = this.shadowRoot;
     const aL_canvas_element = shadowDOM.querySelector(".aL-canvas");
     
