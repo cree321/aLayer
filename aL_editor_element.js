@@ -101,13 +101,16 @@ doubleTapFocus = function(event) {
     const aL_width_input_element = shadowDOM.querySelector(".texture-width");
     const aL_height_input_element = shadowDOM.querySelector(".texture-height");
 
+
+    // Computed Styles Fallback
+    const computed_style = window.getComputedStyle(target_element);
     
     // aL_width_input_element.onchange = (event) => aL_canvas_element.width = parseInt(aL_width_input_element.value);
-    aL_width_input_element.value = target_element.style.width;
+    aL_width_input_element.value = target_element.style.width || computed_style.getPropertyValue("width");
     aL_canvas_element.width = parseInt(aL_width_input_element.value)
 
     // aL_height_input_element.onchange = (event) => aL_canvas_element.height = parseInt(aL_height_input_element.value);
-    aL_height_input_element.value = target_element.style.height;
+    aL_height_input_element.value = target_element.style.height || computed_style.getPropertyValue("height");
     aL_canvas_element.height = parseInt(aL_height_input_element.value);
 
     console.log(aL_canvas_element.width);
